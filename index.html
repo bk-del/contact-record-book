@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Record Book</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <button id="viewMasterBtn" class="btn btn-secondary">
+        <span class="icon">📋</span> View Master List
+      </button>
+      <h1>Contact Record Book</h1>
+      <div class="header-buttons">
+        <button id="openPdfsBtn" class="btn btn-secondary">
+          <span class="icon">📁</span> Open PDFs Folder
+        </button>
+        <button id="addContactBtn" class="btn btn-primary">
+          <span class="icon">➕</span> Add New Contact
+        </button>
+      </div>
+    </header>
+
+    <!-- Main List View -->
+    <div id="listView" class="view active">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search by name or keyword...">
+      </div>
+
+      <div class="contacts-grid" id="contactsGrid">
+        <!-- Contacts will be loaded here -->
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">📋</div>
+        <h2>No Contacts Yet</h2>
+        <p>Click "Add New Contact" to get started</p>
+      </div>
+    </div>
+
+    <!-- Form View (Add/Edit) -->
+    <div id="formView" class="view">
+      <div class="form-header">
+        <h2 id="formTitle">Add New Contact</h2>
+        <button id="backBtn" class="btn btn-secondary">
+          <span class="icon">←</span> Back to List
+        </button>
+      </div>
+
+      <form id="contactForm" class="contact-form">
+        <input type="hidden" id="contactId">
+
+        <!-- Photo Upload -->
+        <div class="form-group">
+          <label class="required">Photo</label>
+          <div class="photo-upload-area" id="photoUploadArea">
+            <div class="photo-preview" id="photoPreview" style="display: none;">
+              <img id="photoImg" src="" alt="Preview">
+              <button type="button" class="remove-photo" id="removePhotoBtn">✕</button>
+            </div>
+            <div class="photo-placeholder" id="photoPlaceholder">
+              <div class="upload-icon">📷</div>
+              <p>Drag & drop an image here</p>
+              <p class="upload-hint">or click to browse</p>
+              <p class="upload-formats">Supports: JPG, PNG, HEIC, WebP, etc.</p>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label for="nameInput" class="required">Name</label>
+          <input type="text" id="nameInput" placeholder="First Last" required>
+        </div>
+
+        <!-- Keywords -->
+        <div class="form-group">
+          <label for="keywordsInput" class="required">Keywords</label>
+          <input type="text" id="keywordsInput" placeholder="e.g., Grandson, Church, Friend" required>
+          <small>Separate multiple keywords with commas</small>
+        </div>
+
+        <!-- Phone (Optional) -->
+        <div class="form-group">
+          <label for="phoneInput">Phone Number</label>
+          <input type="tel" id="phoneInput" placeholder="(123) 456-7890">
+        </div>
+
+        <!-- Email (Optional) -->
+        <div class="form-group">
+          <label for="emailInput">Email</label>
+          <input type="email" id="emailInput" placeholder="email@example.com">
+        </div>
+
+        <!-- Description (Optional) -->
+        <div class="form-group">
+          <label for="descriptionInput">Description</label>
+          <textarea id="descriptionInput" rows="6" maxlength="2000" placeholder="Additional notes and information..."></textarea>
+          <small><span id="charCount">0</span> / 2000 characters</small>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large">
+            <span class="icon">💾</span> Save Contact
+          </button>
+          <button type="button" id="cancelBtn" class="btn btn-secondary btn-large">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Detail View -->
+    <div id="detailView" class="view">
+      <div class="detail-header">
+        <button id="backToListBtn" class="btn btn-secondary">
+          <span class="icon">←</span> Back to List
+        </button>
+        <div class="detail-actions">
+          <button id="printBtn" class="btn btn-secondary" style="margin-right: 10px;">
+            <span class="icon">🖨️</span> Print Page
+          </button>
+          <button id="editBtn" class="btn btn-primary">
+            <span class="icon">✏️</span> Edit
+          </button>
+          <button id="deleteBtn" class="btn btn-danger">
+            <span class="icon">🗑️</span> Delete
+          </button>
+        </div>
+      </div>
+
+      <div class="detail-content" id="detailContent">
+        <!-- Contact details will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+ Contact Record Book (CRB)
+
+## 1. Project Purpose
+
+The Contact Record Book (CRB) is a standalone, offline desktop application for creating and managing physical contact binders. It generates standardized, printable PDF records for each contact, supporting individuals who struggle to use technology (e.g., smartphones) and may have memory challenges. The tool produces both a clean master contact list and individual contact pages designed to be stored in a binder, making it easy for the intended user to identify and reach the right person when needed, while also supporting recall of names and faces through consistent formatting and required photos.
+
+Unlike a standard address book, CRB focuses on:
+
+- **Printable output:** Automatically generates standardized PDF pages for every contact.
+- **Visual records:** Requires a photo for each entry to support memory and recognition.
+- **Physical organization:** Maintains a folder structure that mirrors a physical binder (Master List, individual pages, and recent updates).
+
+## 2. Prerequisites and Installation
+
+### Required software
+
+1. **Node.js (LTS version)**
+   - Download: https://nodejs.org/
+
+### Installation steps
+
+1. Open a terminal (Terminal, PowerShell, or Command Prompt).
+2. Navigate to the project folder.
+3. Install dependencies (Electron, PDFKit, Sharp):
+
+```bash
+npm install
+```
+
+## 3. How to Run and Build
+
+### Development mode
+
+Run the application locally for testing and development:
+
+```bash
+npm start
+```
+
+### Create a Windows executable (EXE)
+
+Build the final installer or executable. In many setups, you will need Administrator permissions to build successfully.
+
+1. Right-click PowerShell and select **Run as Administrator**.
+2. Navigate to the project directory.
+3. Run:
+
+```bash
+npm run build:win
+```
+
+**Output:** The finished application should appear in the `dist/` folder (example: `contact_book_windows.exe`).
+
+## 4. Interface Guide (What Each Button Does)
+
+### Header buttons
+
+- **View Master List**
+  - Opens a large window displaying the alphabetical Master List PDF.
+  - You can print the entire list directly from this window using the printer icon in the top-right corner.
+
+- **Open PDFs Folder**
+  - Opens File Explorer at the location where all contact data and PDFs are stored.
+
+- **Add New Contact**
+  - Opens the form to create a new contact entry.
+
+### Contact detail buttons
+
+When viewing a specific contact:
+
+- **Print Page**
+  - Opens the printer dialog to print only that contact’s page.
+
+- **Edit**
+  - Modify information or change the photo.
+  - Saving regenerates the contact PDF and updates the Master List automatically.
+
+- **Delete**
+  - Permanently removes the contact, their photo, and their PDF record.
+
+## 5. Folder Structure
+
+When the app runs, it creates a folder containing all information and generated PDFs (commonly under Documents or AppData, depending on implementation).
+
+Example structure:
+
+```text
+PDFs/
+├─ MasterList.pdf              # Alphabetical list of everyone
+├─ Images/                     # Raw photo files (.jpg)
+├─ People/                     # Individual PDF pages for each person
+│  ├─ Smith_John.pdf
+│  └─ Doe_Jane.pdf
+└─ RecentUpdates/              # Tracks changes by date
+   └─ update_2026-01-24/       # Created automatically when you save
+      └─ Smith_John.pdf
+```
+
+### The "Recent Updates" feature
+
+Every time you add or edit a contact, the app saves a copy of their PDF into a dated folder inside `RecentUpdates/`.
+
+- **Purpose:** Print only the new or changed pages to add to your binder, rather than re-printing the entire book.
+- **Auto-cleanup:** Update folders older than 10 days are automatically deleted when the app starts (to reduce disk usage).
+
+## 6. Configuration
+
+You can customize PDF text sizes without changing code. Open `config.json` in the project folder to adjust:
+
+- `personName`: Font size of the name on individual pages
+- `masterListName`: Font size of names on the Master List
+
+Tip: Keep values within reasonable ranges so text fits on the page.
+
+## 7. Troubleshooting and Common Errors
+
+- **Icon error during build**
+  - Confirm there is an `icon.ico` in the project folder.
+  - If you do not have one, edit `package.json` and remove the line that references `icon.ico`.
+
+- **Permission denied during build**
+  - Run the build command (`npm run build:win`) from an Administrator terminal.
+
+- **App will not start after updates**
+  - Delete `node_modules/` and reinstall dependencies:
+
+```bash
+npm install
+```
+
+## 8. License
+
+This project is licensed under the MIT License. You are free to modify, distribute, and use it for personal or commercial purposes.

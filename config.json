@@ -1,0 +1,32 @@
+{
+  "pdfTextSizes": {
+    "personName": 28,
+    "personKeywords": 18,
+    "personPhone": 18,
+    "personEmail": 18,
+    "personDescription": 16,
+    "sectionLabels": 14,
+    "masterListTitle": 24,
+    "masterListName": 18,
+    "masterListKeywords": 18
+  },
+  "descriptionCharacterLimit": 2000,
+  "imageSettings": {
+    "maxWidth": 800,
+    "maxHeight": 800,
+    "quality": 85,
+    "format": "jpeg"
+  },
+  "comments": {
+    "personName": "Range: 24-32 ",
+    "personKeywords": "Range: 14-22",
+    "personPhone": "Range: 14-22",
+    "personEmail": "Range: 14-22",
+    "personDescription": "Range: 12-18",
+    "sectionLabels": "Range: 12-16",
+    "masterListTitle": "Range: 20-28",
+    "masterListName": "Range: 14-20 (affects table layout)",
+    "masterListKeywords": "Range: 14-20 (affects table layout)",
+    "note": "Keep all values within recommended ranges to ensure proper PDF layout"
+  }
+}

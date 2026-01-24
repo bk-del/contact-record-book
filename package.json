@@ -1,0 +1,56 @@
+{
+  "name": "contact-record-book",
+  "version": "1.0.0",
+  "description": "A desktop application for managing contact records with PDF generation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.contactbook.app",
+    "productName": "Contact Record Book",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "renderer.js",
+      "index.html",
+      "styles.css",
+      "preload.js",
+      "config.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico",
+      "artifactName": "contact_book_windows.exe"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns",
+      "artifactName": "contact_book_mac.dmg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [
+    "contacts",
+    "pdf",
+    "record-book"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "pdfkit": "^0.13.0",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "electron": "^40.0.0",
+    "electron-builder": "^26.5.0"
+  }
+}
