@@ -46,8 +46,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "pdfkit": "^0.13.0",
-    "sharp": "^0.33.0"
+    "pdfkit": "^0.13.0"
   },
   "devDependencies": {
     "electron": "^40.0.0",

@@ -3,141 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Record Book</title>
+  <title>Contacts</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <button id="viewMasterBtn" class="btn btn-secondary">
-        <span class="icon">📋</span> View Master List
-      </button>
-      <h1>Contact Record Book</h1>
-      <div class="header-buttons">
-        <button id="openPdfsBtn" class="btn btn-secondary">
-          <span class="icon">📁</span> Open PDFs Folder
-        </button>
-        <button id="addContactBtn" class="btn btn-primary">
-          <span class="icon">➕</span> Add New Contact
-        </button>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="traffic-lights">
+          <div class="light red" id="closeBtn"></div>
+          <div class="light yellow" id="minBtn"></div>
+          <div class="light green" id="maxBtn"></div>
+        </div>
       </div>
-    </header>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <div class="nav-label">Library</div>
+          <button id="showListBtn" class="nav-item active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7"r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            All Contacts
+          </button>
+        </div>
+        
+        <div class="nav-group">
+          <div class="nav-label">Actions</div>
+          <button id="addContactBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Add Contact
+          </button>
+          <button id="fullBookBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Contacts Book PDF
+          </button>
+          <button id="newBookBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            New Contacts Book
+          </button>
+          <button id="viewMasterBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Master List PDF
+          </button>
+          <button id="openPdfsBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            Open Folder
+          </button>
+        </div>
+      </nav>
+    </aside>
 
-    <!-- Main List View -->
-    <div id="listView" class="view active">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Search by name or keyword...">
-      </div>
-
-      <div class="contacts-grid" id="contactsGrid">
-        <!-- Contacts will be loaded here -->
-      </div>
-
-      <div id="emptyState" class="empty-state" style="display: none;">
-        <div class="empty-icon">📋</div>
-        <h2>No Contacts Yet</h2>
-        <p>Click "Add New Contact" to get started</p>
-      </div>
-    </div>
-
-    <!-- Form View (Add/Edit) -->
-    <div id="formView" class="view">
-      <div class="form-header">
-        <h2 id="formTitle">Add New Contact</h2>
-        <button id="backBtn" class="btn btn-secondary">
-          <span class="icon">←</span> Back to List
-        </button>
-      </div>
-
-      <form id="contactForm" class="contact-form">
-        <input type="hidden" id="contactId">
-
-        <!-- Photo Upload -->
-        <div class="form-group">
-          <label class="required">Photo</label>
-          <div class="photo-upload-area" id="photoUploadArea">
-            <div class="photo-preview" id="photoPreview" style="display: none;">
-              <img id="photoImg" src="" alt="Preview">
-              <button type="button" class="remove-photo" id="removePhotoBtn">✕</button>
-            </div>
-            <div class="photo-placeholder" id="photoPlaceholder">
-              <div class="upload-icon">📷</div>
-              <p>Drag & drop an image here</p>
-              <p class="upload-hint">or click to browse</p>
-              <p class="upload-formats">Supports: JPG, PNG, HEIC, WebP, etc.</p>
-            </div>
-            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+    <main class="main-content">
+      
+      <div id="listView" class="view active">
+        <header class="top-bar">
+          <h1>Contacts</h1>
+          <div class="search-container">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="searchInput" placeholder="Search">
           </div>
-        </div>
+        </header>
 
-        <!-- Name -->
-        <div class="form-group">
-          <label for="nameInput" class="required">Name</label>
-          <input type="text" id="nameInput" placeholder="First Last" required>
-        </div>
+        <div class="content-scroll" id="contactsGrid">
+          </div>
 
-        <!-- Keywords -->
-        <div class="form-group">
-          <label for="keywordsInput" class="required">Keywords</label>
-          <input type="text" id="keywordsInput" placeholder="e.g., Grandson, Church, Friend" required>
-          <small>Separate multiple keywords with commas</small>
-        </div>
-
-        <!-- Phone (Optional) -->
-        <div class="form-group">
-          <label for="phoneInput">Phone Number</label>
-          <input type="tel" id="phoneInput" placeholder="(123) 456-7890">
-        </div>
-
-        <!-- Email (Optional) -->
-        <div class="form-group">
-          <label for="emailInput">Email</label>
-          <input type="email" id="emailInput" placeholder="email@example.com">
-        </div>
-
-        <!-- Description (Optional) -->
-        <div class="form-group">
-          <label for="descriptionInput">Description</label>
-          <textarea id="descriptionInput" rows="6" maxlength="2000" placeholder="Additional notes and information..."></textarea>
-          <small><span id="charCount">0</span> / 2000 characters</small>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary btn-large">
-            <span class="icon">💾</span> Save Contact
-          </button>
-          <button type="button" id="cancelBtn" class="btn btn-secondary btn-large">Cancel</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Detail View -->
-    <div id="detailView" class="view">
-      <div class="detail-header">
-        <button id="backToListBtn" class="btn btn-secondary">
-          <span class="icon">←</span> Back to List
-        </button>
-        <div class="detail-actions">
-          <button id="printBtn" class="btn btn-secondary" style="margin-right: 10px;">
-            <span class="icon">🖨️</span> Print Page
-          </button>
-          <button id="editBtn" class="btn btn-primary">
-            <span class="icon">✏️</span> Edit
-          </button>
-          <button id="deleteBtn" class="btn btn-danger">
-            <span class="icon">🗑️</span> Delete
-          </button>
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <h3>No Contacts</h3>
+          <p>Click "Add Contact" to create your first entry.</p>
         </div>
       </div>
 
-      <div class="detail-content" id="detailContent">
-        <!-- Contact details will be loaded here -->
+      <div id="detailView" class="view hidden">
+        <header class="top-bar">
+          <button id="backToListBtn" class="btn-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back
+          </button>
+          <div class="actions-group">
+            <button id="printBtn" class="btn-text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              Print
+            </button>
+            <button id="editBtn" class="btn-text">Edit</button>
+            <button id="deleteBtn" class="btn-text destructive">Delete</button>
+          </div>
+        </header>
+        <div class="content-scroll">
+          <div class="detail-container" id="detailContent">
+            </div>
+        </div>
       </div>
-    </div>
+
+      <div id="formView" class="view hidden">
+        <header class="top-bar">
+          <button id="cancelBtn" class="btn-text">Cancel</button>
+          <h2 id="formTitle" style="font-size: 15px; font-weight: 600;">New Contact</h2>
+          <button id="saveBtn" class="btn-text primary">Done</button>
+        </header>
+        <div class="content-scroll">
+          <form id="contactForm" class="apple-form">
+            <input type="hidden" id="contactId">
+            
+            <div class="photo-uploader">
+              <div class="photo-circle" id="photoPlaceholder">
+                <img id="photoImg" src="assets/default-user.png" alt="Profile">
+                <div class="photo-overlay">
+                  <span>Edit</span>
+                </div>
+              </div>
+              <input type="file" id="photoInput" accept="image/*" style="display: none;">
+              <button type="button" class="btn-text destructive small" id="removePhotoBtn" style="display: none;">Remove Photo</button>
+            </div>
+
+            <div class="form-section">
+              <div class="input-group">
+                <input type="text" id="nameInput" placeholder="First Last Name" required>
+              </div>
+              <div class="input-group">
+                <input type="text" id="keywordsInput" placeholder="Keywords (e.g. Grandson, Neighbor)" required>
+              </div>
+              <div class="input-group">
+                <input type="tel" id="phoneInput" placeholder="Phone">
+              </div>
+              <div class="input-group">
+                <input type="email" id="emailInput" placeholder="Email">
+              </div>
+            </div>
+
+            <div class="form-section">
+              <textarea id="descriptionInput" rows="5" placeholder="Notes"></textarea>
+            </div>
+            <div class="char-count" id="charCount">0/2000</div>
+          </form>
+        </div>
+      </div>
+
+    </main>
   </div>
-
   <script src="renderer.js"></script>
 </body>
 </html>

@@ -1,43 +1,49 @@
 let contacts = [];
 let config = null;
 let currentContactId = null;
-let currentPhoto = null;
+let currentPhoto = null; 
 
 // DOM Elements
+const showListBtn = document.getElementById('showListBtn');
+const addContactBtn = document.getElementById('addContactBtn');
+const viewMasterBtn = document.getElementById('viewMasterBtn');
+const openPdfsBtn = document.getElementById('openPdfsBtn');
+
 const listView = document.getElementById('listView');
-const formView = document.getElementById('formView');
 const detailView = document.getElementById('detailView');
+const formView = document.getElementById('formView');
+
 const contactsGrid = document.getElementById('contactsGrid');
 const emptyState = document.getElementById('emptyState');
 const searchInput = document.getElementById('searchInput');
-const contactForm = document.getElementById('contactForm');
-const addContactBtn = document.getElementById('addContactBtn');
-const backBtn = document.getElementById('backBtn');
-const cancelBtn = document.getElementById('cancelBtn');
-const openPdfsBtn = document.getElementById('openPdfsBtn');
+
 const backToListBtn = document.getElementById('backToListBtn');
 const editBtn = document.getElementById('editBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 const printBtn = document.getElementById('printBtn');
-const viewMasterBtn = document.getElementById('viewMasterBtn');
 
-// Form inputs
+const contactForm = document.getElementById('contactForm');
+const cancelBtn = document.getElementById('cancelBtn');
+const saveBtn = document.getElementById('saveBtn');
+
+const fullBookBtn = document.getElementById('fullBookBtn');
+const newBookBtn = document.getElementById('newBookBtn');
+// Form Inputs
 const contactIdInput = document.getElementById('contactId');
-const photoInput = document.getElementById('photoInput');
-const photoUploadArea = document.getElementById('photoUploadArea');
-const photoPlaceholder = document.getElementById('photoPlaceholder');
-const photoPreview = document.getElementById('photoPreview');
-const photoImg = document.getElementById('photoImg');
-const removePhotoBtn = document.getElementById('removePhotoBtn');
 const nameInput = document.getElementById('nameInput');
 const keywordsInput = document.getElementById('keywordsInput');
 const phoneInput = document.getElementById('phoneInput');
 const emailInput = document.getElementById('emailInput');
 const descriptionInput = document.getElementById('descriptionInput');
+const photoInput = document.getElementById('photoInput');
+const photoImg = document.getElementById('photoImg');
+const photoPlaceholder = document.getElementById('photoPlaceholder');
+const removePhotoBtn = document.getElementById('removePhotoBtn');
 const charCount = document.getElementById('charCount');
-const formTitle = document.getElementById('formTitle');
 
-// Initialize app
+const DEFAULT_IMAGE = 'assets/default-user.jpeg';
+
+// Initialize
 async function init() {
   config = await window.electronAPI.getConfig();
   await loadContacts();
@@ -45,356 +51,293 @@ async function init() {
   showView('list');
 }
 
-// Load contacts from storage
 async function loadContacts() {
   contacts = await window.electronAPI.loadContacts();
   renderContacts();
 }
 
-// Render contacts grid
+// HELPER: Determine the correct image source (New Base64 -> Old File -> Default)
+function getContactImage(contact) {
+  if (contact.photo) {
+    return contact.photo; // New System (Base64)
+  }
+  if (contact.imageFileName) {
+    // Old System (Legacy File Path)
+    return `file://${config.userDataPath}/PDFs/Images/${contact.imageFileName}`;
+  }
+  return DEFAULT_IMAGE;
+}
+
 function renderContacts(filter = '') {
-  const filteredContacts = contacts.filter(contact => {
-    const searchTerm = filter.toLowerCase();
-    return contact.name.toLowerCase().includes(searchTerm) ||
-           (contact.keywords && contact.keywords.toLowerCase().includes(searchTerm));
-  });
+  const searchTerm = filter.toLowerCase();
+  const filteredContacts = contacts.filter(contact => 
+    contact.name.toLowerCase().includes(searchTerm) ||
+    (contact.keywords && contact.keywords.toLowerCase().includes(searchTerm))
+  );
 
   if (filteredContacts.length === 0) {
     contactsGrid.innerHTML = '';
-    emptyState.style.display = 'block';
+    emptyState.style.display = filteredContacts.length === 0 && !filter ? 'block' : 'none';
     return;
   }
-
   emptyState.style.display = 'none';
-  
+
   contactsGrid.innerHTML = filteredContacts
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(contact => {
-      const keywords = contact.keywords 
-        ? contact.keywords.split(',').map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')
-        : '';
-
-      const photoStyle = contact.imageFileName 
-        ? `background-image: url('${getImagePath(contact.imageFileName)}'); background-size: cover; background-position: center;`
-        : `background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;`;
-
-      const photoContent = contact.imageFileName 
-        ? ''
-        : `<span style="font-size: 80px; color: white;">${contact.name.charAt(0)}</span>`;
-
+      const imgSrc = getContactImage(contact);
       return `
         <div class="contact-card" data-id="${contact.id}">
-          <div class="contact-photo" style="${photoStyle}">${photoContent}</div>
-          <div class="contact-name">${contact.name}</div>
-          <div class="contact-keywords">${keywords}</div>
+          <img src="${imgSrc}" class="card-photo" onerror="this.src='${DEFAULT_IMAGE}'">
+          <div class="card-name">${contact.name}</div>
+          <div class="card-keywords">${contact.keywords}</div>
         </div>
       `;
     }).join('');
 
-  // Add click handlers
   document.querySelectorAll('.contact-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const id = card.dataset.id;
-      showContactDetail(id);
-    });
+    card.addEventListener('click', () => showContactDetail(card.dataset.id));
   });
 }
 
-// Show specific view
-function showView(view) {
-  listView.classList.remove('active');
-  formView.classList.remove('active');
-  detailView.classList.remove('active');
+function showView(viewName) {
+  [listView, detailView, formView].forEach(el => {
+    el.classList.add('hidden');
+    el.classList.remove('active');
+  });
 
-  if (view === 'list') {
-    listView.classList.add('active');
-  } else if (view === 'form') {
-    formView.classList.add('active');
-  } else if (view === 'detail') {
-    detailView.classList.add('active');
-  }
+  // Small timeout to prevent visual stuttering during transition
+  setTimeout(() => {
+    if (viewName === 'list') {
+      listView.classList.remove('hidden');
+      listView.classList.add('active');
+      showListBtn.classList.add('active');
+    } else if (viewName === 'detail') {
+      detailView.classList.remove('hidden');
+      detailView.classList.add('active');
+      showListBtn.classList.remove('active');
+    } else if (viewName === 'form') {
+      formView.classList.remove('hidden');
+      formView.classList.add('active');
+      showListBtn.classList.remove('active');
+    }
+  }, 10);
 }
 
-// Show contact detail
-async function showContactDetail(contactId) {
-  const contact = contacts.find(c => c.id === contactId);
+async function showContactDetail(id) {
+  const contact = contacts.find(c => c.id === id);
   if (!contact) return;
+  currentContactId = id;
 
-  currentContactId = contactId;
-
-  const keywords = contact.keywords 
-    ? contact.keywords.split(',').map(k => `<span class="keyword-tag-large">${k.trim()}</span>`).join('')
-    : '<span class="keyword-tag-large">N/A</span>';
-
-  let photoHtml;
-  if (contact.imageFileName) {
-    const imagePath = await getImagePath(contact.imageFileName);
-    photoHtml = `<img src="${imagePath}" alt="${contact.name}" style="width: 100%; height: auto; border-radius: 12px;">`;
-  } else {
-    photoHtml = `
-      <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; border-radius: 12px;">
-        <span style="font-size: 120px; color: white;">${contact.name.charAt(0)}</span>
-      </div>
-    `;
-  }
+  const imgSrc = getContactImage(contact);
+  const tagsHtml = contact.keywords.split(',').map(k => `<span class="tag">${k.trim()}</span>`).join('');
 
   document.getElementById('detailContent').innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-photo">
-        ${photoHtml}
-      </div>
-      <div class="detail-info">
-        <h2>${contact.name}</h2>
-        
-        <div class="info-section">
-          <h3>Keywords</h3>
-          <div class="keywords-list">${keywords}</div>
-        </div>
-
-        ${contact.phone ? `
-          <div class="info-section">
-            <h3>Phone</h3>
-            <p>${contact.phone}</p>
-          </div>
-        ` : ''}
-
-        ${contact.email ? `
-          <div class="info-section">
-            <h3>Email</h3>
-            <p>${contact.email}</p>
-          </div>
-        ` : ''}
-
-        ${contact.description ? `
-          <div class="info-section">
-            <h3>Description</h3>
-            <p>${contact.description}</p>
-          </div>
-        ` : ''}
-      </div>
-    </div>
+    <img src="${imgSrc}" class="detail-photo" onerror="this.src='${DEFAULT_IMAGE}'">
+    <div class="detail-name">${contact.name}</div>
+    <div class="detail-keywords">${tagsHtml}</div>
+    
+    ${contact.phone ? `<div class="detail-section"><h4>Phone</h4><p>${contact.phone}</p></div>` : ''}
+    ${contact.email ? `<div class="detail-section"><h4>Email</h4><p>${contact.email}</p></div>` : ''}
+    ${contact.description ? `<div class="detail-section"><h4>Notes</h4><p>${contact.description}</p></div>` : ''}
   `;
 
   showView('detail');
 }
 
-// Setup event listeners
+// IMAGE RESIZER: Compresses image before saving to prevent lag
+function resizeImage(file, maxWidth, maxHeight, callback) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Compress to JPEG at 80% quality
+            callback(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
 function setupEventListeners() {
-  // Navigation
+
+  // Window Controls
+  const closeBtn = document.getElementById('closeBtn');
+  const minBtn = document.getElementById('minBtn');
+  const maxBtn = document.getElementById('maxBtn');
+
+  if (closeBtn) closeBtn.addEventListener('click', () => window.electronAPI.controlWindow('close'));
+  if (minBtn) minBtn.addEventListener('click', () => window.electronAPI.controlWindow('minimize'));
+  if (maxBtn) maxBtn.addEventListener('click', () => window.electronAPI.controlWindow('maximize'));
+  fullBookBtn.addEventListener('click', async () => {
+  fullBookBtn.textContent = 'Generating...'; // Simple feedback
+  await window.electronAPI.createFullBook();
+  fullBookBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Contacts Book PDF`;
+});
+
+newBookBtn.addEventListener('click', async () => {
+  newBookBtn.textContent = 'Generating...';
+  const result = await window.electronAPI.createNewBook();
+  newBookBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> New Contacts Book`;
+
+  if (!result.success && result.count === 0) {
+    alert("No contacts found with today's date.");
+  }
+});
+
+  showListBtn.addEventListener('click', () => showView('list'));
+  backToListBtn.addEventListener('click', () => showView('list'));
+  
   addContactBtn.addEventListener('click', () => {
     resetForm();
-    formTitle.textContent = 'Add New Contact';
     showView('form');
   });
 
-  backBtn.addEventListener('click', () => {
-    resetForm();
-    showView('list');
-  });
-
   cancelBtn.addEventListener('click', () => {
-    resetForm();
-    showView('list');
+    if(currentContactId) showView('detail');
+    else showView('list');
   });
 
-  backToListBtn.addEventListener('click', () => {
-    currentContactId = null;
-    showView('list');
+  // Photo Handling with Resizing
+  photoPlaceholder.addEventListener('click', () => photoInput.click());
+  
+  photoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Resize to max 600x600 to keep the app fast
+      resizeImage(file, 600, 600, (resizedBase64) => {
+        currentPhoto = resizedBase64;
+        photoImg.src = currentPhoto;
+        removePhotoBtn.style.display = 'block';
+      });
+    }
+  });
+
+  removePhotoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    currentPhoto = null;
+    photoInput.value = '';
+    photoImg.src = DEFAULT_IMAGE;
+    removePhotoBtn.style.display = 'none';
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (!nameInput.value.trim() || !keywordsInput.value.trim()) {
+      alert('Name and Keywords are required.');
+      return;
+    }
+
+    const contact = {
+      id: contactIdInput.value || Date.now().toString(),
+      name: nameInput.value.trim(),
+      keywords: keywordsInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      email: emailInput.value.trim(),
+      description: descriptionInput.value.trim(),
+      photo: currentPhoto, 
+      timestamp: new Date().toISOString()
+    };
+
+    // Preserve old photo connection if we didn't upload a new one
+    if (!currentPhoto && currentContactId) {
+        const existing = contacts.find(c => c.id === currentContactId);
+        if (existing && existing.imageFileName) {
+            contact.imageFileName = existing.imageFileName; 
+        }
+    }
+
+    const result = await window.electronAPI.saveContact(contact);
+    if (result.success) {
+      await loadContacts();
+      showView('list');
+    } else {
+      alert('Error: ' + result.error);
+    }
   });
 
   editBtn.addEventListener('click', () => {
     const contact = contacts.find(c => c.id === currentContactId);
-    if (contact) {
-      populateForm(contact);
-      formTitle.textContent = 'Edit Contact';
-      showView('form');
-    }
+    if (contact) populateForm(contact);
   });
 
   deleteBtn.addEventListener('click', async () => {
-    if (confirm('Are you sure you want to delete this contact? This will also delete the associated PDF and image files.')) {
-      const result = await window.electronAPI.deleteContact(currentContactId);
-      if (result.success) {
-        await loadContacts();
-        currentContactId = null;
-        showView('list');
-      } else {
-        alert('Error deleting contact: ' + result.error);
-      }
-    }
-  });
-
-  viewMasterBtn.addEventListener('click', async () => {
-    const result = await window.electronAPI.viewMasterList();
-    if (result && !result.success) {
-      alert(result.error);
+    if(confirm('Delete this contact?')) {
+      await window.electronAPI.deleteContact(currentContactId);
+      await loadContacts();
+      showView('list');
     }
   });
 
   printBtn.addEventListener('click', async () => {
     const contact = contacts.find(c => c.id === currentContactId);
     if (!contact) return;
-    
-    // Construct the filename
-    const lastName = contact.name.split(' ').pop() || 'Unknown';
-    const firstName = contact.name.split(' ')[0] || 'Unknown';
-    const fileName = `${lastName}_${firstName}.pdf`;
-
-    // Trigger the print command
-    await window.electronAPI.printPDF(fileName);
+    const safeName = contact.name.replace(/[^a-z0-9]/gi, '_');
+    await window.electronAPI.printPDF(`${safeName}.pdf`);
   });
 
-  openPdfsBtn.addEventListener('click', () => {
-    window.electronAPI.openPDFsFolder();
-  });
-
-  // Search
-  searchInput.addEventListener('input', (e) => {
-    renderContacts(e.target.value);
-  });
-
-  // Photo upload
-  photoPlaceholder.addEventListener('click', () => {
-    photoInput.click();
-  });
-
-  photoInput.addEventListener('change', handlePhotoSelect);
-
-  removePhotoBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    removePhoto();
-  });
-
-  // Drag and drop
-  photoUploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    photoPlaceholder.classList.add('drag-over');
-  });
-
-  photoUploadArea.addEventListener('dragleave', () => {
-    photoPlaceholder.classList.remove('drag-over');
-  });
-
-  photoUploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    photoPlaceholder.classList.remove('drag-over');
-    const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
-      handlePhotoFile(files[0]);
-    }
-  });
-
-  // Character counter
-  descriptionInput.addEventListener('input', () => {
-    charCount.textContent = descriptionInput.value.length;
-  });
-
-  // Form submission
-  contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await saveContact();
-  });
+  viewMasterBtn.addEventListener('click', () => window.electronAPI.viewMasterList());
+  openPdfsBtn.addEventListener('click', () => window.electronAPI.openPDFsFolder());
+  
+  searchInput.addEventListener('input', (e) => renderContacts(e.target.value));
+  descriptionInput.addEventListener('input', () => charCount.textContent = `${descriptionInput.value.length}/2000`);
 }
 
-// Handle photo selection
-function handlePhotoSelect(e) {
-  const file = e.target.files[0];
-  if (file && file.type.startsWith('image/')) {
-    handlePhotoFile(file);
-  }
-}
-
-// Handle photo file
-function handlePhotoFile(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    currentPhoto = e.target.result;
-    photoImg.src = currentPhoto;
-    photoPreview.style.display = 'block';
-    photoPlaceholder.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-// Remove photo
-function removePhoto() {
-  currentPhoto = null;
-  photoImg.src = '';
-  photoPreview.style.display = 'none';
-  photoPlaceholder.style.display = 'block';
-  photoInput.value = '';
-}
-
-// Reset form
 function resetForm() {
   contactForm.reset();
   contactIdInput.value = '';
-  removePhoto();
-  charCount.textContent = '0';
   currentContactId = null;
-  formTitle.textContent = 'Add New Contact';
+  currentPhoto = null;
+  photoImg.src = DEFAULT_IMAGE;
+  removePhotoBtn.style.display = 'none';
+  document.getElementById('formTitle').textContent = 'New Contact';
 }
 
-// Populate form for editing
 function populateForm(contact) {
   contactIdInput.value = contact.id;
   nameInput.value = contact.name;
-  keywordsInput.value = contact.keywords || '';
+  keywordsInput.value = contact.keywords;
   phoneInput.value = contact.phone || '';
   emailInput.value = contact.email || '';
   descriptionInput.value = contact.description || '';
-  charCount.textContent = contact.description ? contact.description.length : 0;
-
-  // We can't restore the photo from imageFileName in the form
-  // User will need to re-upload if they want to change it
-  currentPhoto = null;
-}
-
-// Save contact
-async function saveContact() {
-  // Validation
-  if (!nameInput.value.trim()) {
-    alert('Please enter a name');
-    return;
-  }
-
-  if (!keywordsInput.value.trim()) {
-    alert('Please enter at least one keyword');
-    return;
-  }
-
-  if (!currentPhoto && !contactIdInput.value) {
-    alert('Please upload a photo');
-    return;
-  }
-
-  const contact = {
-    id: contactIdInput.value || Date.now().toString(),
-    name: nameInput.value.trim(),
-    keywords: keywordsInput.value.trim(),
-    phone: phoneInput.value.trim(),
-    email: emailInput.value.trim(),
-    description: descriptionInput.value.trim(),
-    photo: currentPhoto, // Will be processed and removed by main process
-    timestamp: new Date().toISOString()
-  };
-
-  const result = await window.electronAPI.saveContact(contact);
-
-  if (result.success) {
-    await loadContacts();
-    resetForm();
-    showView('list');
+  
+  // Use helper to display correct image
+  const imgSrc = getContactImage(contact);
+  photoImg.src = imgSrc;
+  
+  // Only set currentPhoto if it's a Base64 string (editable)
+  if(contact.photo) {
+      currentPhoto = contact.photo;
+      removePhotoBtn.style.display = 'block';
   } else {
-    alert('Error saving contact: ' + result.error);
+      currentPhoto = null;
+      // If it's a legacy image, we allow overwriting it, but the 'remove' button is hidden
+      // until they add a new one, or we can opt to show it.
+      removePhotoBtn.style.display = contact.imageFileName ? 'block' : 'none';
   }
+  
+  document.getElementById('formTitle').textContent = 'Edit Contact';
+  showView('form');
 }
 
-// Helper function to get image path
-async function getImagePath(fileName) {
-  const appPath = await window.electronAPI.getAppPath();
-  return `file://${appPath}/PDFs/Images/${fileName}`;
-}
-
-// Start the app
 init();

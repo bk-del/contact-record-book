@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAppPath: () => ipcRenderer.invoke('get-app-path'),
   getConfig: () => ipcRenderer.invoke('get-config'),
   printPDF: (fileName) => ipcRenderer.invoke('print-pdf', fileName),
-  viewMasterList: () => ipcRenderer.invoke('view-master-list')
+  viewMasterList: () => ipcRenderer.invoke('view-master-list'),
+  createFullBook: () => ipcRenderer.invoke('create-full-book'),
+  createNewBook: () => ipcRenderer.invoke('create-new-book'),
+  controlWindow: (action) => ipcRenderer.send('window-control', action)
   
 });
