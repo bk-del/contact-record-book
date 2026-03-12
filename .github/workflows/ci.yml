@@ -30,7 +30,7 @@ jobs:
       - name: Detect test script
         id: tests
         run: |
-          node -e "const pkg=require('./package.json');const testScript=(pkg.scripts&&pkg.scripts.test)||'';const hasTests=Boolean(testScript)&&!/^echo\\s+[\"']Error: no test specified/.test(testScript);process.stdout.write('has_tests=' + (hasTests ? 'true' : 'false') + '\n');" >> \"$GITHUB_OUTPUT\"
+          node -e "const pkg=require('./package.json');const testScript=(pkg.scripts&&pkg.scripts.test)||'';const hasTests=Boolean(testScript)&&!/^echo\\s+[\"']Error: no test specified/.test(testScript);process.stdout.write('has_tests=' + (hasTests ? 'true' : 'false') + '\n');" >> "$GITHUB_OUTPUT"
 
       - name: Test
         if: steps.tests.outputs.has_tests == 'true'
