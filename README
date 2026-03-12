@@ -21,7 +21,7 @@ Unlike a standard address book, CRB focuses on:
 
 1. Open a terminal (Terminal, PowerShell, or Command Prompt).
 2. Navigate to the project folder.
-3. Install dependencies (Electron, PDFKit, Sharp):
+3. Install dependencies (Electron, PDFKit):
 
 ```bash
 npm install
@@ -35,6 +35,14 @@ Run the application locally for testing and development:
 
 ```bash
 npm start
+```
+
+### Run automated tests
+
+Run the Node.js unit tests for core date/file/migration helpers:
+
+```bash
+npm test
 ```
 
 ### Create a Windows executable (EXE)
@@ -53,31 +61,49 @@ npm run build:win
 
 ## 4. Interface Guide (What Each Button Does)
 
-### Header buttons
+### Sidebar actions
 
-- **View Master List**
-  - Opens a large window displaying the alphabetical Master List PDF.
-  - You can print the entire list directly from this window using the printer icon in the top-right corner.
+- **All Contacts**
+  - Shows the contact list.
+  - Includes search and update-date filters (All, Updated Today, Updated Last 7 Days).
 
-- **Open PDFs Folder**
-  - Opens File Explorer at the location where all contact data and PDFs are stored.
-
-- **Add New Contact**
+- **Add Contact**
   - Opens the form to create a new contact entry.
 
-### Contact detail buttons
+- **Full Contact Book**
+  - Generates one PDF containing all active contacts.
+
+- **Today's Updated Contacts**
+  - Generates one PDF for contacts updated today.
+
+- **Print Recent Updates**
+  - Generates one PDF for contacts updated in the last 10 days.
+
+- **Master List PDF**
+  - Opens the alphabetical Master List PDF.
+
+- **Open PDF Storage Folder**
+  - Opens the local folder where contact PDFs and data snapshots are stored.
+
+- **Export Backup**
+  - Creates a single `.zip` backup of contacts and PDF data.
+
+- **Import Backup**
+  - Restores contacts and PDFs from a `.zip` backup.
+
+### Contact detail actions
 
 When viewing a specific contact:
 
-- **Print Page**
-  - Opens the printer dialog to print only that contact’s page.
+- **Print**
+  - Opens the print dialog for that contact’s page.
 
 - **Edit**
-  - Modify information or change the photo.
-  - Saving regenerates the contact PDF and updates the Master List automatically.
+  - Updates fields or photo, then regenerates PDFs.
 
 - **Delete**
-  - Permanently removes the contact, their photo, and their PDF record.
+  - Soft-deletes the contact with a 30-second Undo option.
+  - If not undone in time, deletion is finalized automatically.
 
 ## 5. Folder Structure
 
@@ -88,13 +114,13 @@ Example structure:
 ```text
 PDFs/
 ├─ MasterList.pdf              # Alphabetical list of everyone
-├─ Images/                     # Raw photo files (.jpg)
-├─ People/                     # Individual PDF pages for each person
-│  ├─ Smith_John.pdf
-│  └─ Doe_Jane.pdf
+├─ Images/                     # Legacy photo files (.jpg/.png), if present
+├─ People/                     # Individual PDF pages for each contact
+│  ├─ contact_1709837440501.pdf
+│  └─ contact_1709837440933.pdf
 └─ RecentUpdates/              # Tracks changes by date
    └─ update_2026-01-24/       # Created automatically when you save
-      └─ Smith_John.pdf
+      └─ contact_1709837440501.pdf
 ```
 
 ### The "Recent Updates" feature
