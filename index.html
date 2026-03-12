@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contacts</title>
+  <title>Contact Record Book</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,16 +16,16 @@
           <div class="light green" id="maxBtn"></div>
         </div>
       </div>
-      
+
       <nav class="sidebar-nav">
         <div class="nav-group">
           <div class="nav-label">Library</div>
           <button id="showListBtn" class="nav-item active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7"r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             All Contacts
           </button>
         </div>
-        
+
         <div class="nav-group">
           <div class="nav-label">Actions</div>
           <button id="addContactBtn" class="nav-item">
@@ -34,11 +34,15 @@
           </button>
           <button id="fullBookBtn" class="nav-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            Contacts Book PDF
+            Full Contact Book
           </button>
           <button id="newBookBtn" class="nav-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-            New Contacts Book
+            Today's Updated Contacts
+          </button>
+          <button id="recentUpdatesBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v5h5"></path><path d="M3.05 13a9 9 0 1 0 .5-4"></path><polyline points="12 7 12 12 15 15"></polyline></svg>
+            Print Recent Updates
           </button>
           <button id="viewMasterBtn" class="nav-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -46,25 +50,42 @@
           </button>
           <button id="openPdfsBtn" class="nav-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-            Open Folder
+            Open PDF Storage Folder
+          </button>
+          <button id="exportBackupBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export Backup
+          </button>
+          <button id="importBackupBtn" class="nav-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Import Backup
           </button>
         </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      
+
       <div id="listView" class="view active">
         <header class="top-bar">
-          <h1>Contacts</h1>
-          <div class="search-container">
-            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="searchInput" placeholder="Search">
+          <h1>Contact Record Book</h1>
+          <div class="top-bar-tools">
+            <div class="filter-container">
+              <label for="updatedFilter" class="sr-only">Filter contacts</label>
+              <select id="updatedFilter">
+                <option value="all">All Contacts</option>
+                <option value="today">Updated Today</option>
+                <option value="last7">Updated Last 7 Days</option>
+              </select>
+            </div>
+            <div class="search-container">
+              <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="searchInput" placeholder="Search contacts">
+            </div>
           </div>
         </header>
 
-        <div class="content-scroll" id="contactsGrid">
-          </div>
+        <div class="content-scroll contacts-grid" id="contactsGrid"></div>
 
         <div id="emptyState" class="empty-state" style="display: none;">
           <h3>No Contacts</h3>
@@ -76,7 +97,7 @@
         <header class="top-bar">
           <button id="backToListBtn" class="btn-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            Back
+            Back to Contacts
           </button>
           <div class="actions-group">
             <button id="printBtn" class="btn-text">
@@ -88,24 +109,23 @@
           </div>
         </header>
         <div class="content-scroll">
-          <div class="detail-container" id="detailContent">
-            </div>
+          <div class="detail-container" id="detailContent"></div>
         </div>
       </div>
 
       <div id="formView" class="view hidden">
         <header class="top-bar">
           <button id="cancelBtn" class="btn-text">Cancel</button>
-          <h2 id="formTitle" style="font-size: 15px; font-weight: 600;">New Contact</h2>
-          <button id="saveBtn" class="btn-text primary">Done</button>
+          <h2 id="formTitle" class="form-title">New Contact</h2>
+          <button id="saveBtn" class="btn-text primary">Save</button>
         </header>
         <div class="content-scroll">
           <form id="contactForm" class="apple-form">
             <input type="hidden" id="contactId">
-            
+
             <div class="photo-uploader">
               <div class="photo-circle" id="photoPlaceholder">
-                <img id="photoImg" src="assets/default-user.png" alt="Profile">
+                <img id="photoImg" src="assets/default-user.jpeg" alt="Profile">
                 <div class="photo-overlay">
                   <span>Edit</span>
                 </div>
@@ -119,7 +139,7 @@
                 <input type="text" id="nameInput" placeholder="First Last Name" required>
               </div>
               <div class="input-group">
-                <input type="text" id="keywordsInput" placeholder="Keywords (e.g. Grandson, Neighbor)" required>
+                <input type="text" id="keywordsInput" placeholder="Keywords (for example: Grandson, Neighbor)" required>
               </div>
               <div class="input-group">
                 <input type="tel" id="phoneInput" placeholder="Phone">
@@ -130,7 +150,7 @@
             </div>
 
             <div class="form-section">
-              <textarea id="descriptionInput" rows="5" placeholder="Notes"></textarea>
+              <textarea id="descriptionInput" rows="5" placeholder="Notes about this contact"></textarea>
             </div>
             <div class="char-count" id="charCount">0/2000</div>
           </form>
@@ -139,6 +159,20 @@
 
     </main>
   </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <div id="modalOverlay" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Confirm Action</h3>
+      <p id="modalMessage"></p>
+      <div class="modal-actions">
+        <button id="modalCancelBtn" class="btn-text">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-text primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <script src="renderer.js"></script>
 </body>
 </html>

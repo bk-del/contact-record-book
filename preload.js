@@ -4,13 +4,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadContacts: () => ipcRenderer.invoke('load-contacts'),
   saveContact: (contact) => ipcRenderer.invoke('save-contact', contact),
   deleteContact: (contactId) => ipcRenderer.invoke('delete-contact', contactId),
+  softDeleteContact: (contactId) =>
+    ipcRenderer.invoke('soft-delete-contact', contactId),
+  undoDeleteContact: (contactId) =>
+    ipcRenderer.invoke('undo-delete-contact', contactId),
   openPDFsFolder: () => ipcRenderer.invoke('open-pdfs-folder'),
-  getAppPath: () => ipcRenderer.invoke('get-app-path'),
   getConfig: () => ipcRenderer.invoke('get-config'),
-  printPDF: (fileName) => ipcRenderer.invoke('print-pdf', fileName),
+  printContact: (contactId) => ipcRenderer.invoke('print-contact', contactId),
   viewMasterList: () => ipcRenderer.invoke('view-master-list'),
   createFullBook: () => ipcRenderer.invoke('create-full-book'),
   createNewBook: () => ipcRenderer.invoke('create-new-book'),
-  controlWindow: (action) => ipcRenderer.send('window-control', action)
-  
+  createRecentUpdatesBook: () =>
+    ipcRenderer.invoke('create-recent-updates-book'),
+  exportBackup: () => ipcRenderer.invoke('export-backup'),
+  importBackup: () => ipcRenderer.invoke('import-backup'),
+  controlWindow: (action) => ipcRenderer.send('window-control', action),
 });
